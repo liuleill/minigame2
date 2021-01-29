@@ -1,0 +1,28 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "round_button",
+    "texture": "a06b3469-23bd-48d4-bc81-271b46fa5a4b",
+    "atlas": "",
+    "rect": [
+      0,
+      0,
+      448,
+      164
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      448,
+      164
+    ],
+    "capInsets": [
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+}
