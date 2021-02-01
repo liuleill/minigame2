@@ -10,6 +10,8 @@ var MYHandCardsValue = [];
 var MYHandCardsType = [];
 var BANKERHandCardsValue = [];
 var BANKERHandCardsType = [];
+var PUBLICCardsValue = [];
+var PUBLICCardsType = [];
 var IsBOOl = false;
 cc.Class({
     extends: cc.Component,
@@ -72,6 +74,12 @@ cc.Class({
             default: [],
             type: cc.Sprite
         },
+
+        PublicCardsNodeList: {
+            default: [],
+            type: cc.Sprite
+        },
+
         cardBlock: {
             default: null,
             type: cc.SpriteFrame
@@ -123,6 +131,10 @@ cc.Class({
         for (var i = 0; i < 2; i++) {
             this.NodeList[i].active = false;
             this.JokerMaskList[i].node.active = false;
+        }
+
+        for (var i = 0; i < 3; i++) {
+            this.PublicCardsNodeList[i].node.active = false;
         }
 
         cc.debug.setDisplayStats(false);
@@ -270,6 +282,7 @@ cc.Class({
     },
 
     onnextRound: function onnextRound() {
+        ////下一次牌
 
         this.resetTablefunc();
         this.countTimes();
@@ -347,7 +360,7 @@ cc.Class({
         IsBOOl = false;
     },
     countTimes: function countTimes() {
-        var tempInt = 1; //3
+        var tempInt = 3;
 
         this.schedule(function () {
             if (tempInt > 0) {
@@ -362,8 +375,8 @@ cc.Class({
     onstartGame: function onstartGame() {
 
         this.giveCardAction();
-        this.StartBtn.node.active = false;
-        this.SeeCardsBtn.node.active = true;
+        this.StartBtn.node.active = false; ///不让激活才能隐藏，就是说执行完startbtn后，要让按钮消失
+        this.SeeCardsBtn.node.active = true; //激活才能显示出来
         this.PackBtn.node.active = true;
         this.SideShowBtn.node.active = true;
 
@@ -372,8 +385,13 @@ cc.Class({
             this.JokerMaskList[i].node.active = true;
         }
 
-        this.BothHandCardsValueGive();
+        for (var i = 0; i < 3; i++) {
+            this.PublicCardsNodeList[i].node.active = true;
+        }
+
+        this.BothHandCardsValueGive(); //发牌！！！！！
     },
+
     /*双方发牌 */
     BothHandCardsValueGive: function BothHandCardsValueGive() {
 
@@ -410,11 +428,52 @@ cc.Class({
                 MYHandCardsValue.push(temp);
                 BANKERHandCardsValue.push(temp1);
             }
+
+            var publiccard0 = 0;
+            var publiccard1 = 0;
+            var publiccard2 = 0;
+            // for(var i=0;i<3;i++)
+            // {
+            //     publiccard = Math.ceil((1 + (3 - 1 + 1) * Math.random()));
+            //     // publiccard1 = Math.ceil((1 + (3 - 1 + 1) * Math.random()));
+            //     // publiccard2 = Math.ceil((1 + (3 - 1 + 1) * Math.random()));
+            //     // PUBLICCardsType.push(publiccard0);
+            //     // PUBLICCardsType.push(publiccard1);
+            //     PUBLICCardsType.push(publiccard);
+            //     publiccard = Math.ceil((2 + (13 - 2 + 1) * Math.random()));
+            //     // publiccard1 = Math.ceil((2 + (13 - 2 + 1) * Math.random()));
+            //     // publiccard2 = Math.ceil((2 + (13 - 2 + 1) * Math.random()));
+            //     // PUBLICCardsValue.push(publiccard0);
+            //     // PUBLICCardsValue.push(publiccard1);
+            //     PUBLICCardsValue.push(publiccard);
+
+            // }
+
+            // publiccard0 = Math.ceil((1 + (3 - 1 + 1) * Math.random()));
+            // publiccard1 = Math.ceil((1 + (3 - 1 + 1) * Math.random()));
+            // publiccard2 = Math.ceil((1 + (3 - 1 + 1) * Math.random()));
+            // PUBLICCardsType.push(publiccard0);
+            // PUBLICCardsType.push(publiccard1);
+            // PUBLICCardsType.push(publiccard2);
+            // publiccard0 = Math.ceil((2 + (13 - 2 + 1) * Math.random()));
+            // publiccard1 = Math.ceil((2 + (13 - 2 + 1) * Math.random()));
+            // publiccard2 = Math.ceil((2 + (13 - 2 + 1) * Math.random()));
+            // PUBLICCardsValue.push(publiccard0);
+            // PUBLICCardsValue.push(publiccard1);
+            // PUBLICCardsValue.push(publiccard2);
+
+
+            var publiccard = 0;
+            publiccard = Math.ceil(1 + (3 - 1 + 1) * Math.random());
+            PUBLICCardsType.push(publiccard);
+            publiccard = Math.ceil(2 + (13 - 2 + 1) * Math.random());
+            PUBLICCardsValue.push(publiccard);
         }
 
         this.checkHandCard();
         cc.log("1value :" + MYHandCardsValue + "    1type:" + MYHandCardsType);
         cc.log("2value :" + BANKERHandCardsValue + "    2type:" + BANKERHandCardsType);
+        cc.log("3value :" + PUBLICCardsValue + "    3type:" + PUBLICCardsType);
     },
     /*检测双方手中有同样的牌  重复就重新发牌 非Joker*/
     checkHandCard: function checkHandCard() {
@@ -424,7 +483,7 @@ cc.Class({
             for (var j = 3 - i; j > 1; j--) {
                 var temp = 0;
                 var temp1 = 0;
-                // 自己
+                // 自己                 /////？？？？？？？？这是为了干嘛，，检测同样的牌？
                 if (MYHandCardsType[i] == MYHandCardsType[j] && MYHandCardsValue[i] == MYHandCardsValue[j]) {
                     temp = Math.ceil(1 + (3 - 1 + 1) * Math.random());
                     temp1 = Math.ceil(2 + (13 - 2 + 1) * Math.random());
@@ -438,7 +497,7 @@ cc.Class({
 
                 //庄家
                 if (BANKERHandCardsType[i] == BANKERHandCardsType[j] && BANKERHandCardsValue[i] == BANKERHandCardsValue[j]) {
-                    temp = Math.ceil(1 + (3 - 1 + 1) * Math.random());
+                    temp = Math.ceil(1 + (3 - 1 + 1) * Math.random()); ///向上取整Math.ceil
                     temp1 = Math.ceil(2 + (13 - 2 + 1) * Math.random());
                     if (temp != BANKERHandCardsType[i] && temp1 != BANKERHandCardsValue[i]) {
 
@@ -486,14 +545,14 @@ cc.Class({
 
         for (var index = 0; index < 3; index++) {
             if (index == 0) {
-                this.MyCardsMaskList[index].node.active = true;
+                this.MyCardsMaskList[index].node.active = true; ////如果是false，第一张排不是灰色的了？
                 this.BankerCardsMaskList[index].node.active = true;
             } else {
                 this.MyCardsMaskList[index].node.active = false;
                 this.BankerCardsMaskList[index].node.active = false;
             }
 
-            this.MyCardsNodesList[index].node.active = true;
+            this.MyCardsNodesList[index].node.active = true; ////true是为了让自己的三张牌显示出来，否则的话，就不能显示三张牌
             var local = MYHandCardsValue[index] - 2 + ((MYHandCardsType[index] - 1) * 13 - 1);
 
             this.MyCardsNodesList[index].spriteFrame = this.CardsSpritesList[local];
@@ -505,6 +564,7 @@ cc.Class({
         }
     },
     giveCardAction: function giveCardAction() {
+        ///????
 
         for (var index = 1; index < 3; index++) {
             this.MyCardsNodesList[index].node.active = true;
@@ -517,10 +577,11 @@ cc.Class({
             this.BankerCardsNodesList[index].node.active = true;
 
             var rotateTo1 = cc.rotateTo(0.2, 0);
-            var moveTo1 = cc.moveTo(0.2, cc.v2(0, 18));
-            var rotateTo = cc.rotateTo(0.2, 0);
-            var moveTo = cc.moveTo(0.2, cc.v2(0, 18));
+            var moveTo1 = cc.moveTo(0.2, cc.v2(0, 18)); //移动
+            var rotateTo = cc.rotateTo(0.2, 0); //旋转
+            var moveTo = cc.moveTo(0.2, cc.v2(0, 18)); //移动导致定的坐标
             if (index == 2) {
+                ///？？
                 rotateTo = cc.rotateTo(0.2, -22);
                 moveTo = cc.moveTo(0.2, cc.v2(60, 0));
 
@@ -528,31 +589,33 @@ cc.Class({
                 moveTo1 = cc.moveTo(0.2, cc.v2(60, 0));
             }
 
-            this.MyCardsNodesList[index].node.runAction(cc.spawn(rotateTo, moveTo));
-            this.BankerCardsNodesList[index].node.runAction(cc.spawn(rotateTo1, moveTo1));
+            this.MyCardsNodesList[index].node.runAction(cc.spawn(rotateTo, moveTo)); ///runAction，节点运行这个action动作
+            this.BankerCardsNodesList[index].node.runAction(cc.spawn(rotateTo1, moveTo1)); ///
         }
     },
     /*SeeBtn 按钮响应函数 */
     showMyHandCards: function showMyHandCards() {
         for (var i = 0; i < 2; i++) {
-            this.NodeList[i].active = true;
+            this.NodeList[i].active = true; ///如果是false，那么会隐藏庄家和自己的共6张牌
             this.JokerMaskList[i].node.active = false;
         }
 
         this.SideShowBtn.node.active = true;
         this.PackBtn.node.active = true;
-        this.SeeCardsBtn.node.active = false;
+        this.SeeCardsBtn.node.active = false; //隐藏seebtn按钮
 
         for (var index = 0; index < 3; index++) {
             this.MyCardsNodesList[index].node.active = true;
             if (index == 0) {
                 this.MyCardsMaskList[index].node.active = true;
             } else {
-                this.MyCardsMaskList[index].node.active = false;
+                this.MyCardsMaskList[index].node.active = false; //// 如果是true会变灰色
             }
 
-            var local = MYHandCardsValue[index] - 2 + ((MYHandCardsType[index] - 1) * 13 - 1);
-            this.MyCardsNodesList[index].spriteFrame = this.CardsSpritesList[local];
+            var local = MYHandCardsValue[index] - 2 + ((MYHandCardsType[index] - 1) * 13 - 1); ////可以显示出牌的正面
+            this.MyCardsNodesList[index].spriteFrame = this.CardsSpritesList[local]; ////让牌从反面变成正面的效果
+            var local_public = PUBLICCardsValue[index] - 2 + ((PUBLICCardsType[index] - 1) * 13 - 1);
+            this.PublicCardsNodeList[index].spriteFrame = this.CardsSpritesList[local_public];
         }
     },
     //开牌动画 所有牌 包括joker
