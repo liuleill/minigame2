@@ -8,6 +8,8 @@ var BANKERHandCardsType = [];
 var PUBLICCardsValue = [];
 var PUBLICCardsType = [];
 var IsBOOl = false;
+
+
 cc.Class({
     extends: cc.Component,
 
@@ -60,6 +62,12 @@ cc.Class({
             default: [],
             type: cc.Sprite
         },
+
+        PublicCardsMaskList: {
+            default: [],
+            type: cc.Sprite
+        },
+
         MyCardsNodesList: {
             default: [],
             type: cc.Sprite
@@ -113,6 +121,8 @@ cc.Class({
     start() {
         this.onload();
     },
+
+
     onload: function () {
         this.StartBtn.node.active = true;
         this.SeeCardsBtn.node.active = false;
@@ -135,6 +145,8 @@ cc.Class({
         cc.debug.setDisplayStats(false);
 
     },
+
+
     BtnClickEvents: function (event, cusutomData) {
 
         switch (cusutomData) {
@@ -157,6 +169,8 @@ cc.Class({
                 break;
         }
     },
+
+
     onsideShowfunc: function () {
 
         if (!IsBOOl) {
@@ -166,10 +180,12 @@ cc.Class({
         this.showHandCards();
         this.showJokerCardsAction(true);
 
-        this.scheduleOnce(this.showResultfunc, 2);
+        this.scheduleOnce(this.showResultfunc, 2); ////延后两秒执行函数this.showResultfunc
         this.scheduleOnce(function () { this.NextRoundBtn.node.active = true; }, 3);
     },
-    showResultfunc: function () {
+
+
+    showResultfunc: function () { /////比牌结果，点数相加??????????
         var tempResultType = 0;
         if (CardsResultType[0] > CardsResultType[1]) {
             tempResultType = CardsResultType[0];
@@ -186,7 +202,8 @@ cc.Class({
                 result += MYHandCardsValue[index];
                 result1 += BANKERHandCardsValue[index];
             }
-
+            cc.log("result: " + result);
+            cc.log("result1: " + result1);
             if (result > result1) {
                 tempResultType = CardsResultType[0];
                 this.MyWinnerTip.node.active = true;
@@ -197,6 +214,7 @@ cc.Class({
                 this.MyWinnerTip.node.active = false;
                 this.BankerWinnerTip.node.active = true;
             }
+            cc.log("CardsResultType[0]: " + CardsResultType[0]);
         }
 
         switch (tempResultType) {
@@ -226,6 +244,8 @@ cc.Class({
         this.WinnerAnimation.play();
 
     },
+
+
     onseeCardsfunc: function () {
 
         if (!IsBOOl) {
@@ -236,6 +256,8 @@ cc.Class({
         this.showMyHandCards();
         this.showJokerCardsAction(false);
     },
+
+
     dropCards: function () {
         if (!IsBOOl) {
             this.showJokerCards();
@@ -244,7 +266,9 @@ cc.Class({
         this.SideShowBtn.node.active = false;
         this.PackBtn.node.active = false;
         this.SeeCardsBtn.node.active = false;
-
+        for (var i = 0; i < 3; i++) {
+            this.PublicCardsNodeList[i].node.active = false;
+        }
 
         this.showHandCards(true);
 
@@ -271,16 +295,19 @@ cc.Class({
 
         this.scheduleOnce(function () { this.NextRoundBtn.node.active = true; }, 1);
     },
+
+
     //重新洗牌并且发牌
     onPackBtn: function () {
         this.dropCards();
     },
 
+
     onnextRound: function () { ////下一次牌
 
         this.resetTablefunc();
         this.countTimes();
-
+       
         this.scheduleOnce(function () {
 
 
@@ -298,16 +325,22 @@ cc.Class({
                 this.NodeList[i].active = true;
                 this.JokerMaskList[i].node.active = true;
             }
+
+            for(var i=0;i<3;i++){
+                this.PublicCardsNodeList[i].node.active = true;
+            }
             this.giveCardAction();
             this.showDefault();
 
         }, 4);
 
     },
+
+
     showDefault: function () {
         this.MyCardsNodesList[0].node.active = true;
         this.MyCardsMaskList[0].node.active = true;
-        this.MyCardsNodesList[0].spriteFrame = this.DefaultJokerSprite[0];
+        this.MyCardsNodesList[0].spriteFrame = this.DefaultJokerSprite[0];//如果注释了这一行，那么第一张百搭牌下次开始不会变成反面
         this.MyCardsMaskList[0].spriteFrame = this.cardBlock;
 
         this.BankerCardsMaskList[0].node.active = true;
@@ -325,15 +358,21 @@ cc.Class({
                 this.BankerCardsNodesList[index].node.active = true;
                 this.BankerCardsNodesList[index].spriteFrame = this.DefaultJokerSprite[1];
             }
+            this.PublicCardsNodeList[index].spriteFrame = this.DefaultJokerSprite[1];////这是为了让下次洗牌时
+                                            ///让三张公牌反面显示@！！！！！！！！
         }
     },
+
+
     resetTablefunc: function () {
         MYHandCardsType = [];
         MYHandCardsValue = [];
         BANKERHandCardsType = [];
         BANKERHandCardsValue = [];
         CardsResultType = [];
-        this.WinnerAnimation.node.active = false;
+        PUBLICCardsValue = [];
+        PUBLICCardsType = [];
+        this.WinnerAnimation.node.active = false;///隐藏桌面的条状图标
         this.MyWinnerTip.node.active = false;
         this.BankerWinnerTip.node.active = false;
         this.NextRoundBtn.node.active = false;
@@ -350,15 +389,19 @@ cc.Class({
 
         for (var index = 0; index < 3; index++) {
             this.MyCardsMaskList[index].node.active = true;
-            this.MyCardsNodesList[index].node.active = false;
+            this.MyCardsNodesList[index].node.active = false;//洗牌前，隐藏自己的三张牌
             this.BankerCardsMaskList[index].node.active = true;
             this.BankerCardsNodesList[index].node.active = false;
+            //this.PublicCardsMaskList[index].node.active = true;
+            this.PublicCardsNodeList[index].node.active = false; /////洗牌前，下一把开始前，隐藏三张共有牌
         }
 
         IsBOOl = false;
     },
+
+
     countTimes: function () {
-        var tempInt = 3;
+        var tempInt = 1;
 
         this.schedule(function () {
             if (tempInt > 0) {
@@ -370,6 +413,8 @@ cc.Class({
             tempInt -= 1;
         }, 1);
     },
+
+
     onstartGame: function () {
 
         this.giveCardAction();
@@ -386,9 +431,10 @@ cc.Class({
         for (var i = 0; i < 3; i++) {
             this.PublicCardsNodeList[i].node.active = true;
         }
-
+        //cc.log("zzzzzz")
         this.BothHandCardsValueGive();//发牌！！！！！
     },
+
 
     /*双方发牌 */
     BothHandCardsValueGive: function () {
@@ -477,6 +523,8 @@ cc.Class({
         cc.log("2value :" + BANKERHandCardsValue + "    2type:" + BANKERHandCardsType);
         cc.log("3value :" + PUBLICCardsValue + "    3type:" + PUBLICCardsType);
     },
+
+
     /*检测双方手中有同样的牌  重复就重新发牌 非Joker*/
     checkHandCard: function () {
 
@@ -538,6 +586,8 @@ cc.Class({
         }
 
     },
+
+
     /*SideShowBtn 按钮响应函数 */
     showHandCards: function () {
         for (var i = 0; i < 2; i++) {
@@ -548,8 +598,8 @@ cc.Class({
         this.PackBtn.node.active = false;
 
 
-        for (var index = 0; index < 3; index++) {
-            if (index == 0) {
+        for (var index = 0; index < 3; index++) { ///让双方的玩家牌都显示出正面
+            if (index == 0) {////如果是第一张百搭牌的时候
                 this.MyCardsMaskList[index].node.active = true;////如果是false，第一张排不是灰色的了？
                 this.BankerCardsMaskList[index].node.active = true;
             } else {
@@ -559,20 +609,22 @@ cc.Class({
 
             this.MyCardsNodesList[index].node.active = true;////true是为了让自己的三张牌显示出来，否则的话，就不能显示三张牌
             var local = (MYHandCardsValue[index] - 2) + ((MYHandCardsType[index] - 1) * 13 - 1);
-
             this.MyCardsNodesList[index].spriteFrame = this.CardsSpritesList[local];
 
             this.BankerCardsNodesList[index].node.active = true;
             local = (BANKERHandCardsValue[index] - 2) + ((BANKERHandCardsType[index] - 1) * 13 - 1)
-
             this.BankerCardsNodesList[index].spriteFrame = this.CardsSpritesList[local];
 
-
+            // cc.log("Banker:  " + BANKERHandCardsType[index] + "  "+ BANKERHandCardsValue[index]);
+            // cc.log("My:  "+ MYHandCardsType[index] + "  "+ MYHandCardsValue[index]);
         }
 
 
 
     },
+
+
+
     giveCardAction: function () {///????
 
         for (var index = 1; index < 3; index++) {
@@ -601,6 +653,8 @@ cc.Class({
             this.BankerCardsNodesList[index].node.runAction(cc.spawn(rotateTo1, moveTo1));///
         }
     },
+
+
     /*SeeBtn 按钮响应函数 */
     showMyHandCards: function () {
         for (var i = 0; i < 2; i++) {
@@ -626,8 +680,9 @@ cc.Class({
             this.PublicCardsNodeList[index].spriteFrame = this.CardsSpritesList[local_public];
         }
     },
-    //开牌动画 所有牌 包括joker
 
+
+    //开牌动画 所有牌 包括joker
     showJokerCardsAction: function (isShowBothHandCards) {
         for (var index = 0; index < 3; index++) {
 
@@ -722,6 +777,8 @@ cc.Class({
 
         }
     },
+
+
     showJokerCards: function () {
 
         this.NodeList[0].active = true;
@@ -760,6 +817,8 @@ cc.Class({
         }
 
     },
+
+
     /*数组所有牌排序  从大到小*/
     sortCardANDType: function (CardHandValue, CardHandType) {
         for (var i = 0; i < 3; i++) {
@@ -778,6 +837,8 @@ cc.Class({
 
         }
     },
+
+
     /*排序 非joker牌 从大到小*/
     sortCardANDTypeNoJoker: function (CardHandValue, CardHandType) {
         for (var i = 0; i < 3; i++) {
@@ -796,6 +857,8 @@ cc.Class({
 
         }
     },
+
+
     /*检测豹子*/
     checkbaozi: function (CardHandValue, CardHandType) {
 
@@ -813,6 +876,8 @@ cc.Class({
             return 0;
         }
     },
+
+
     //检查双方不存在哪个花色 
     checkIsExsitType: function (value) {
         var CountsRepeat = 0;
@@ -938,6 +1003,8 @@ cc.Class({
 
 
     },
+
+    
     find: function (arr, num) {
         var count = 0;
 
@@ -953,6 +1020,8 @@ cc.Class({
 
         return count;
     },
+
+
     //检查新生成的值是否存在  true 为存在  false为不存在 
     checkTypeIsExsit: function (value, type) {
         var isexistmycardscount = 0;
@@ -987,6 +1056,7 @@ cc.Class({
 
 
     },
+
 
     /*检测同花顺*/
     checktonghuashun: function (CardHandValue, CardHandType) {
@@ -1028,6 +1098,8 @@ cc.Class({
 
 
     },
+
+
     /*检测同花*/
     checktonghua: function (CardHandValue, CardHandType) {
         if (CardHandType[1] == CardHandType[2]) {
@@ -1046,6 +1118,8 @@ cc.Class({
             return 0;
         }
     },
+
+
     /*检测顺子*/
     checkshunzi: function (CardHandValue, CardHandType) {
         if (CardHandValue[1] + 1 == CardHandValue[2]) {
@@ -1088,6 +1162,8 @@ cc.Class({
             return 0;
         }
     },
+
+
     /*检测单张*/
     checkdanzhang: function (CardHandValue, CardHandType) {
         var temp = this.checkIsExsitType(CardHandValue[1]);

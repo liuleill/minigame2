@@ -621,7 +621,7 @@
     "_position": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": -184,
+      "y": -195.228,
       "z": 0
     },
     "_scale": {
@@ -1369,7 +1369,7 @@
     "_position": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 90,
+      "y": 137.72,
       "z": 0
     },
     "_scale": {
@@ -2113,8 +2113,8 @@
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": -447.679,
-      "y": -37.985,
+      "x": -119.247,
+      "y": -23.949,
       "z": 0
     },
     "_scale": {
@@ -4767,6 +4767,11 @@
       {
         "__id__": 40
       }
+    ],
+    "PublicCardsMaskList": [
+      null,
+      null,
+      null
     ],
     "MyCardsNodesList": [
       {
