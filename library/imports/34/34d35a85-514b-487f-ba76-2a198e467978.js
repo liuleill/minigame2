@@ -46,6 +46,19 @@ cc.Class({
             default: null,
             type: cc.Button
         },
+        cardmaskBtn0: {
+            default: null,
+            type: cc.Button
+        },
+        cardmaskBtn1: {
+            default: null,
+            type: cc.Button
+        },
+        cardmaskBtn2: {
+            default: null,
+            type: cc.Button
+        },
+
         TimeCounts: {
             default: null,
             type: cc.Label
@@ -149,7 +162,7 @@ cc.Class({
     },
 
     BtnClickEvents: function BtnClickEvents(event, cusutomData) {
-
+        cc.log(cusutomData);
         switch (cusutomData) {
             case "PackBtn":
                 this.onPackBtn();
@@ -166,17 +179,50 @@ cc.Class({
             case "StartBtn":
                 this.onstartGame();
                 break;
+            case "card_mask0":
+                this.publiccardBtn0();
+                break;
+            case "card_mask1":
+                this.publiccardBtn1();
+                break;
+            case "card_mask2":
+                this.publiccardBtn2();
+                break;
             default:
                 break;
         }
     },
 
+    publiccardBtn0: function publiccardBtn0() {
+        this.JokerMaskList[0].spriteFrame = this.PublicCardsNodeList[0].spriteFrame;
+        //cc.log("MyHandCardsValue: " + MYHandCardsValue);
+        MYHandCardsValue.splice(0, 1, PUBLICCardsValue[0]);
+        MYHandCardsType.splice(0, 1, PUBLICCardsType[0]);
+        cc.log("换牌后的数组： ");
+        cc.log("MyHandCardsValue: " + MYHandCardsValue + "\n");
+    },
+    publiccardBtn1: function publiccardBtn1() {
+        this.JokerMaskList[0].spriteFrame = this.PublicCardsNodeList[1].spriteFrame;
+        MYHandCardsValue.splice(0, 1, PUBLICCardsValue[1]);
+        MYHandCardsType.splice(0, 1, PUBLICCardsType[1]);
+        cc.log("换牌后的数组： ");
+        cc.log("MyHandCardsValue: " + MYHandCardsValue);
+    },
+    publiccardBtn2: function publiccardBtn2() {
+        this.JokerMaskList[0].spriteFrame = this.PublicCardsNodeList[2].spriteFrame;
+        MYHandCardsValue.splice(0, 1, PUBLICCardsValue[2]);
+        MYHandCardsType.splice(0, 1, PUBLICCardsType[2]);
+        cc.log("换牌后的数组： ");
+        cc.log("MyHandCardsValue: " + MYHandCardsValue);
+    },
+
     onsideShowfunc: function onsideShowfunc() {
-
-        if (!IsBOOl) {
-            this.showJokerCards();
-        }
-
+        cc.log("在before onsideshowfunc！！！");
+        // if (!IsBOOl) {
+        //     this.showJokerCards();
+        // }
+        this.showJokerCards();
+        cc.log("在after onsideshowfunc");
         this.showHandCards();
         this.showJokerCardsAction(true);
 
@@ -186,10 +232,19 @@ cc.Class({
         }, 3);
     },
 
+    ///////比牌！！！！！！！！**************************************************
     showResultfunc: function showResultfunc() {
-        /////比牌结果，点数相加??????????
+        /////比牌！！！   同类比点数，不同类比牌型
+        ///this.showJokerCards();///////
         var tempResultType = 0;
+        cc.log("比牌之前的数组情况：");
+        cc.log("BANKERHandsCardsValue: " + BANKERHandCardsValue + "type: " + BANKERHandCardsType + "CardsResultType[1]:" + CardsResultType[1]);
+        cc.log("MYHandCardsValue:" + MYHandCardsValue + "type: " + MYHandCardsType + "CardsResultType[0]:" + CardsResultType[0]);
+        cc.log("CardsResultType[1]:" + CardsResultType[1]);
+        cc.log("CardsResultType[0]: " + CardsResultType[0]);
+
         if (CardsResultType[0] > CardsResultType[1]) {
+            ////如果不是同类牌，哪个牌型大，如豹子>同花。
             tempResultType = CardsResultType[0];
             this.MyWinnerTip.node.active = true;
             this.BankerWinnerTip.node.active = false;
@@ -198,14 +253,18 @@ cc.Class({
             this.MyWinnerTip.node.active = false;
             this.BankerWinnerTip.node.active = true;
         } else {
+            /////如果是同一牌型，那么只比较点数的大小
             var result1 = 0;
             var result = 0;
             for (var index = 0; index < 3; index++) {
                 result += MYHandCardsValue[index];
                 result1 += BANKERHandCardsValue[index];
             }
-            cc.log("result: " + result);
-            cc.log("result1: " + result1);
+            cc.log("BankercardValue:  " + BANKERHandCardsValue);
+            cc.log("MYHandCardsValue:  " + MYHandCardsValue);
+            cc.log("result1_bankerhandcard_totalvalue: " + result1);
+            cc.log("result_myhandcard_totalvalue: " + result);
+
             if (result > result1) {
                 tempResultType = CardsResultType[0];
                 this.MyWinnerTip.node.active = true;
@@ -215,21 +274,21 @@ cc.Class({
                 this.MyWinnerTip.node.active = false;
                 this.BankerWinnerTip.node.active = true;
             }
-            cc.log("CardsResultType[0]: " + CardsResultType[0]);
+            //cc.log("CardsResultType[0]: " + CardsResultType[0]);
         }
 
         switch (tempResultType) {
             case 60:
-                this.WinnerAnimationText.string = "TRAIL";
+                this.WinnerAnimationText.string = "TRAIL"; //豹子
                 break;
             case 50:
-                this.WinnerAnimationText.string = "PURE SEQUENCE";
+                this.WinnerAnimationText.string = "PURE SEQUENCE"; //同花顺
                 break;
             case 40:
-                this.WinnerAnimationText.string = "SEQUENCE";
+                this.WinnerAnimationText.string = "SEQUENCE"; //同花
                 break;
             case 30:
-                this.WinnerAnimationText.string = "COLOR";
+                this.WinnerAnimationText.string = "COLOR"; //顺子
                 break;
             case 20:
                 this.WinnerAnimationText.string = "PAIR";
@@ -246,17 +305,26 @@ cc.Class({
     },
 
     onseeCardsfunc: function onseeCardsfunc() {
-
+        cc.log("before  showJokerCards()");
         if (!IsBOOl) {
             this.showJokerCards();
             IsBOOl = true;
         }
+        cc.log("after showJokerCards()");
 
         this.showMyHandCards();
         this.showJokerCardsAction(false);
+        ////********** */
+        this.MyCardsNodesList[0].spriteFrame = false; ///让第一张牌隐藏
+        this.BankerCardsNodesList[0].spriteFrame = false;
+
+        this.scheduleOnce(function () {
+            this.BankerCardsNodesList[0].spriteFrame = this.DefaultJokerSprite[1];
+        }, 2);
     },
 
     dropCards: function dropCards() {
+        ///盖牌 pack
         if (!IsBOOl) {
             this.showJokerCards();
         }
@@ -304,13 +372,15 @@ cc.Class({
     onnextRound: function onnextRound() {
         ////下一次牌
 
+        this.MyCardsNodesList[0].spriteFrame = false; //////让第一张牌隐藏起来
+        this.BankerCardsNodesList[0].spriteFrame = false;
         this.resetTablefunc();
         this.countTimes();
 
         this.scheduleOnce(function () {
 
             this.unscheduleAllCallbacks();
-            this.BothHandCardsValueGive();
+            this.BothHandCardsValueGive(); ////再次发牌！！！！
 
             this.NextRoundBtn.node.active = false;
             this.SeeCardsBtn.node.active = true;
@@ -329,15 +399,16 @@ cc.Class({
             }
             this.giveCardAction();
             this.showDefault();
-        }, 4);
+        }, 1);
     },
 
     showDefault: function showDefault() {
         this.MyCardsNodesList[0].node.active = true;
         this.MyCardsMaskList[0].node.active = true;
-        this.MyCardsNodesList[0].spriteFrame = this.DefaultJokerSprite[0]; //如果注释了这一行，那么第一张百搭牌下次开始不会变成反面
+        this.MyCardsNodesList[0].spriteFrame = this.DefaultJokerSprite[1]; //如果注释了这一行，那么第一张百搭牌下次开始不会变成反面
+        //this.MyCardsNodesList[0].spriteFrame = false;
         this.MyCardsMaskList[0].spriteFrame = this.cardBlock;
-
+        //this.MyCardsMaskList[0].spriteFrame = fasle;
         this.BankerCardsMaskList[0].node.active = true;
         this.BankerCardsNodesList[0].node.active = true;
         this.BankerCardsNodesList[0].spriteFrame = this.DefaultJokerSprite[0];
@@ -354,8 +425,10 @@ cc.Class({
                 this.BankerCardsNodesList[index].spriteFrame = this.DefaultJokerSprite[1];
             }
             this.PublicCardsNodeList[index].spriteFrame = this.DefaultJokerSprite[1]; ////这是为了让下次洗牌时
-            ///让三张公牌反面显示@！！！！！！！！
+            ///让三张公牌反面显示！！！！！！！！
         }
+        this.MyCardsNodesList[0].spriteFrame = false; //////让第一张牌隐藏起来
+        this.BankerCardsNodesList[0].spriteFrame = false;
     },
 
     resetTablefunc: function resetTablefunc() {
@@ -416,7 +489,7 @@ cc.Class({
 
         for (var i = 0; i < 2; i++) {
             this.NodeList[i].active = true;
-            this.JokerMaskList[i].node.active = true;
+            this.JokerMaskList[i].node.active = false;
         }
 
         for (var i = 0; i < 3; i++) {
@@ -424,6 +497,9 @@ cc.Class({
         }
         //cc.log("zzzzzz")
         this.BothHandCardsValueGive(); //发牌！！！！！
+
+        this.MyCardsNodesList[0].spriteFrame = false; //////让第一张牌隐藏起来
+        this.BankerCardsNodesList[0].spriteFrame = false;
     },
 
     /*双方发牌 */
@@ -463,40 +539,6 @@ cc.Class({
                 BANKERHandCardsValue.push(temp1);
             }
 
-            var publiccard0 = 0;
-            var publiccard1 = 0;
-            var publiccard2 = 0;
-            // for(var i=0;i<3;i++)
-            // {
-            //     publiccard = Math.ceil((1 + (3 - 1 + 1) * Math.random()));
-            //     // publiccard1 = Math.ceil((1 + (3 - 1 + 1) * Math.random()));
-            //     // publiccard2 = Math.ceil((1 + (3 - 1 + 1) * Math.random()));
-            //     // PUBLICCardsType.push(publiccard0);
-            //     // PUBLICCardsType.push(publiccard1);
-            //     PUBLICCardsType.push(publiccard);
-            //     publiccard = Math.ceil((2 + (13 - 2 + 1) * Math.random()));
-            //     // publiccard1 = Math.ceil((2 + (13 - 2 + 1) * Math.random()));
-            //     // publiccard2 = Math.ceil((2 + (13 - 2 + 1) * Math.random()));
-            //     // PUBLICCardsValue.push(publiccard0);
-            //     // PUBLICCardsValue.push(publiccard1);
-            //     PUBLICCardsValue.push(publiccard);
-
-            // }
-
-            // publiccard0 = Math.ceil((1 + (3 - 1 + 1) * Math.random()));
-            // publiccard1 = Math.ceil((1 + (3 - 1 + 1) * Math.random()));
-            // publiccard2 = Math.ceil((1 + (3 - 1 + 1) * Math.random()));
-            // PUBLICCardsType.push(publiccard0);
-            // PUBLICCardsType.push(publiccard1);
-            // PUBLICCardsType.push(publiccard2);
-            // publiccard0 = Math.ceil((2 + (13 - 2 + 1) * Math.random()));
-            // publiccard1 = Math.ceil((2 + (13 - 2 + 1) * Math.random()));
-            // publiccard2 = Math.ceil((2 + (13 - 2 + 1) * Math.random()));
-            // PUBLICCardsValue.push(publiccard0);
-            // PUBLICCardsValue.push(publiccard1);
-            // PUBLICCardsValue.push(publiccard2);
-
-
             var publiccard = 0;
             publiccard = Math.ceil(1 + (3 - 1 + 1) * Math.random());
             PUBLICCardsType.push(publiccard);
@@ -505,13 +547,59 @@ cc.Class({
         }
 
         this.checkHandCard();
-        cc.log("1value :" + MYHandCardsValue + "    1type:" + MYHandCardsType);
-        cc.log("2value :" + BANKERHandCardsValue + "    2type:" + BANKERHandCardsType);
-        cc.log("3value :" + PUBLICCardsValue + "    3type:" + PUBLICCardsType);
+        cc.log("onstartgame->开始发牌：");
+        cc.log("MYHandCardsvalue牌值 :" + MYHandCardsValue + "    MYHandCardstype花色:" + MYHandCardsType);
+        cc.log("BANKERHandCardsValue牌值 :" + BANKERHandCardsValue + "    BANKERHandCardstype花色: " + BANKERHandCardsType);
+        cc.log("PUBLICCardsValue牌值 :" + PUBLICCardsValue + "    PUBLICCardsType花色: " + PUBLICCardsType);
     },
 
     /*检测双方手中有同样的牌  重复就重新发牌 非Joker*/
     checkHandCard: function checkHandCard() {
+
+        for (var i = 0; i < 3; i++) {
+            for (var j = 3 - i; j > 0; j--) {
+                var temp = 0;
+                var temp1 = 0;
+
+                //检测三张公有牌有无冲突
+                if (PUBLICCardsType[i] == PUBLICCardsType[j] && PUBLICCardsValue[i] == PUBLICCardsValue[j]) {
+                    temp = Math.ceil(1 + (3 - 1 + 1) * Math.random()); ///向上取整Math.ceil
+                    temp1 = Math.ceil(2 + (13 - 2 + 1) * Math.random());
+                    if (temp != PUBLICCardsType[i] && temp1 != PUBLICCardsValue[i]) {
+                        PUBLICCardsType[i] = temp;
+                        PUBLICCardsValue[i] = temp1;
+                    } else {
+                        this.checkHandCard();
+                    }
+                }
+
+                //检测三张公牌和自己牌之间会不会冲突
+                if (MYHandCardsType[i] == PUBLICCardsType[j] && MYHandCardsValue[i] == PUBLICCardsValue[j]) {
+                    temp = Math.ceil(1 + (3 - 1 + 1) * Math.random());
+                    temp1 = Math.ceil(2 + (13 - 2 + 1) * Math.random());
+                    if (temp != MYHandCardsType[i] && temp1 != MYHandCardsValue[i]) {
+
+                        MYHandCardsType[i] = temp;
+                        MYHandCardsValue[i] = temp1;
+                    } else {
+                        this.checkHandCard();
+                    }
+                }
+
+                //检测庄家和公牌是否会冲突
+                if (BANKERHandCardsType[i] == PUBLICCardsType[j] && BANKERHandCardsValue[i] == PUBLICCardsValue[j]) {
+                    temp = Math.ceil(1 + (3 - 1 + 1) * Math.random());
+                    temp1 = Math.ceil(2 + (13 - 2 + 1) * Math.random());
+                    if (temp != MYHandCardsType[i] && temp1 != BANKERHandCardsValue[i]) {
+
+                        BANKERHandCardsType[i] = temp;
+                        BANKERHandCardsValue[i] = temp1;
+                    } else {
+                        this.checkHandCard();
+                    }
+                }
+            }
+        }
 
         //检测双方自己手牌中有无重复牌 第二张牌开始比 
         for (var i = 1; i < 3; i++) {
@@ -543,6 +631,7 @@ cc.Class({
                     }
                 }
 
+                //检测庄家和自己的牌有无冲突
                 if (MYHandCardsType[i] == BANKERHandCardsType[j] && MYHandCardsValue[i] == BANKERHandCardsValue[j]) {
                     temp = Math.ceil(1 + (3 - 1 + 1) * Math.random());
                     temp1 = Math.ceil(2 + (13 - 2 + 1) * Math.random());
@@ -572,6 +661,7 @@ cc.Class({
 
     /*SideShowBtn 按钮响应函数 */
     showHandCards: function showHandCards() {
+        //this.showJokerCards();
         for (var i = 0; i < 2; i++) {
             this.NodeList[i].active = true;
             this.JokerMaskList[i].node.active = false;
@@ -601,10 +691,18 @@ cc.Class({
             // cc.log("Banker:  " + BANKERHandCardsType[index] + "  "+ BANKERHandCardsValue[index]);
             // cc.log("My:  "+ MYHandCardsType[index] + "  "+ MYHandCardsValue[index]);
         }
+
+        this.giveBankeroneCard();
+    },
+
+    giveBankeroneCard: function giveBankeroneCard() {
+        this.JokerMaskList[1].spriteFrame = this.PublicCardsNodeList[0].spriteFrame;
+        MYHandCardsValue.splice(0, 1, PUBLICCardsValue[0]);
+        MYHandCardsType.splice(0, 1, PUBLICCardsType[0]);
     },
 
     giveCardAction: function giveCardAction() {
-        ///????
+        ///给牌的动画？？
 
         for (var index = 1; index < 3; index++) {
             this.MyCardsNodesList[index].node.active = true;
@@ -771,6 +869,11 @@ cc.Class({
         } else {
             CardsResultType.push(10);
         }
+        cc.log("CardResultType_length: " + CardsResultType.length);
+        cc.log("seebtn->showJokerCards:");
+        cc.log("MY_CardsResultType: " + CardsResultType);
+        cc.log("MYHandCardsValue初始化数组值: " + MYHandCardsValue);
+        cc.log("seebtn->showjokercards->");
 
         if (this.checkbaozi(BANKERHandCardsValue, BANKERHandCardsType) > 0) {
             CardsResultType.push(60);
@@ -785,6 +888,9 @@ cc.Class({
         } else {
             CardsResultType.push(10);
         }
+        cc.log("CardResultType_length: " + CardsResultType.length);
+        cc.log("Banker_CardsResultType: " + CardsResultType);
+        cc.log("BANKerCardsValue初始化的数组值: " + BANKERHandCardsValue);
     },
 
     /*数组所有牌排序  从大到小*/
@@ -805,7 +911,7 @@ cc.Class({
         }
     },
 
-    /*排序 非joker牌 从大到小*/
+    /*排序 非joker牌 从大到小*/ /////?????三张牌的是不是也可以排序？？？？
     sortCardANDTypeNoJoker: function sortCardANDTypeNoJoker(CardHandValue, CardHandType) {
         for (var i = 0; i < 3; i++) {
             for (var j = 1; j < 3 - 1 - i; j++) {
@@ -823,22 +929,32 @@ cc.Class({
         }
     },
 
-    /*检测豹子*/
+    /*检测豹子*/ ////改写
     checkbaozi: function checkbaozi(CardHandValue, CardHandType) {
 
-        if (CardHandValue[1] == CardHandValue[2]) {
-            var temp = this.checkIsExsitType(CardHandValue[1]);
-            if (temp != 0) {
-                CardHandValue[0] = CardHandValue[1];
-                CardHandType[0] = temp;
-                return 60;
-            } else {
-                return 0;
-            }
-        } else {
-            return 0;
+        if (CardHandValue[0] == CardHandValue[1] && CardHandValue[1] == CardHandValue[2]) {
+            return 60;
         }
+        return 0;
     },
+    // /*检测豹子*/     原始写法
+    // checkbaozi: function (CardHandValue, CardHandType) {
+
+    //     if (CardHandValue[1] == CardHandValue[2]) {
+    //         var temp = this.checkIsExsitType(CardHandValue[1]);
+    //         if (temp != 0) {
+    //             CardHandValue[0] = CardHandValue[1];
+    //             CardHandType[0] = temp;
+    //             return 60;
+    //         } else {
+    //             return 0;
+    //         }
+
+    //     } else {
+    //         return 0;
+    //     }
+    // },
+
 
     //检查双方不存在哪个花色 
     checkIsExsitType: function checkIsExsitType(value) {
@@ -1007,102 +1123,153 @@ cc.Class({
         }
     },
 
-    /*检测同花顺*/
+    /*检测同花顺*/ ///改写
     checktonghuashun: function checktonghuashun(CardHandValue, CardHandType) {
-
-        if (CardHandValue[2] == CardHandValue[1] + 1 && CardHandType[2] == CardHandType[1]) {
-
-            if (CardHandValue[2] + 1 < 16 || CardHandValue[1] - 1 > 0) {
-                var temp = this.checkTypeIsExsit(CardHandValue[2] + 1, CardHandType[2]);
-                var temp1 = this.checkTypeIsExsit(CardHandValue[1] - 1, CardHandType[1]);
-                if (temp == false) {
-                    CardHandType[0] = CardHandType[2];
-                    CardHandValue[0] = CardHandValue[2] + 1;
-                    return 50;
-                } else if (temp1 == false) {
-                    CardHandType[0] = CardHandType[1];
-                    CardHandValue[0] = CardHandValue[1] - 1;
-                    return 50;
-                } else {
-                    return 0;
-                }
+        if (CardHandType[2] == CardHandType[1] && CardHandType[0] == CardHandType[1]) {
+            if (CardHandValue[1] + 1 == CardHandValue[2] && CardHandValue[1] + 2 == CardHandValue[0] || CardHandValue[1] + 1 == CardHandValue[2] && CardHandValue[1] - 1 == CardHandValue[0]) {
+                return 50;
             }
-        } else if (CardHandValue[2] - 2 == CardHandValue[1] && CardHandType[2] == CardHandType[1]) {
-            //判断例如2 ,4 同花
-            if (CardHandValue[2] - 1 > 0) {
-                var temp = this.checkTypeIsExsit(CardHandValue[2] - 1, CardHandType[2]);
-                if (temp == false) {
-                    CardHandType[0] = CardHandType[2];
-                    CardHandValue[0] = CardHandValue[2] - 1;
-
-                    return 50;
-                } else {
-                    return 0;
-                }
-            }
-        } else {
-            return 0;
         }
+        return 0;
     },
 
-    /*检测同花*/
+    // /*检测同花顺*/  ///原始
+    // checktonghuashun: function (CardHandValue, CardHandType) {
+
+    //     if ((CardHandValue[2] == CardHandValue[1] + 1) && CardHandType[2] == CardHandType[1]) {
+
+    //         if (CardHandValue[2] + 1 < 16 || CardHandValue[1] - 1 > 0) {
+    //             var temp = this.checkTypeIsExsit(CardHandValue[2] + 1, CardHandType[2]);
+    //             var temp1 = this.checkTypeIsExsit(CardHandValue[1] - 1, CardHandType[1]);
+    //             if (temp == false) {
+    //                 CardHandType[0] = CardHandType[2];
+    //                 CardHandValue[0] = CardHandValue[2] + 1;
+    //                 return 50;
+    //             } else if (temp1 == false) {
+    //                 CardHandType[0] = CardHandType[1];
+    //                 CardHandValue[0] = CardHandValue[1] - 1;
+    //                 return 50;
+    //             } else {
+    //                 return 0;
+    //             }
+    //         }
+
+    //     } else if (CardHandValue[2] - 2 == CardHandValue[1] && CardHandType[2] == CardHandType[1]) { //判断例如2 ,4 同花
+    //         if (CardHandValue[2] - 1 > 0) {
+    //             var temp = this.checkTypeIsExsit(CardHandValue[2] - 1, CardHandType[2]);
+    //             if (temp == false) {
+    //                 CardHandType[0] = CardHandType[2];
+    //                 CardHandValue[0] = CardHandValue[2] - 1;
+
+    //                 return 50;
+    //             } else {
+    //                 return 0;
+    //             }
+    //         }
+
+    //     } else {
+    //         return 0;
+    //     }
+
+
+    // },
+
+
+    /*检测同花*/ ///改写
     checktonghua: function checktonghua(CardHandValue, CardHandType) {
-        if (CardHandType[1] == CardHandType[2]) {
-            for (var num = 15; num >= 2; num--) {
-                var temp = this.checkTypeIsExsit(num, CardHandType[1]);
-                if (temp == false) {
-                    CardHandValue[0] = num;
-                    CardHandType[0] = CardHandType[1];
-                    return 40;
-                } else {
-                    return 0;
-                }
-            }
-        } else {
-            return 0;
+        if (CardHandType[1] == CardHandType[2] && CardHandType[1] == CardHandType[0]) {
+            return 40;
         }
+        return 0;
     },
 
-    /*检测顺子*/
+    //  /*检测同花*/ //原始
+    //  checktonghua: function (CardHandValue, CardHandType) {
+    //     if (CardHandType[1] == CardHandType[2]) {
+    //         for (var num = 15; num >= 2; num--) {
+    //             var temp = this.checkTypeIsExsit(num, CardHandType[1]);
+    //             if (temp == false) {
+    //                 CardHandValue[0] = num;
+    //                 CardHandType[0] = CardHandType[1];
+    //                 return 40;
+    //             }
+    //             else {
+    //                 return 0;
+    //             }
+    //         }
+    //     } else {
+    //         return 0;
+    //     }
+    // },
+
+
+    /*检测顺子*/ ////修改
     checkshunzi: function checkshunzi(CardHandValue, CardHandType) {
-        if (CardHandValue[1] + 1 == CardHandValue[2]) {
-
-            if (CardHandType[2] + 1 < 16) {
-                var temp = this.checkIsExsitType(CardHandValue[2] + 1);
-                var temp1 = this.checkIsExsitType(CardHandValue[1] - 1);
-
-                if (temp != 0) {
-                    CardHandType[0] = temp;
-                    CardHandValue[0] = CardHandValue[2] + 1;
-
-                    return 30;
-                } else if (temp1 != 0) {
-                    CardHandType[0] = temp1;
-                    CardHandValue[0] = CardHandValue[1] - 1;
-
-                    return 30;
-                } else {
-                    return 0;
-                }
-            } else {
-                return 0;
-            }
-        } else if (CardHandValue[1] == CardHandValue[2] - 2) {
-            var temp = this.checkIsExsitType(CardHandValue[2] - 1);
-            if (temp != 0) {
-                CardHandType[0] = temp;
-                CardHandValue[0] = CardHandValue[2] - 1;
-
-                return 30;
-            } else {
-                return 0;
-            }
-        } else {
-            return 0;
+        if (CardHandValue[0] + 1 == CardHandValue[1] && CardHandValue[0] + 2 == CardHandValue[2]) {
+            return 30;
+        } else if (CardHandValue[0] - 1 == CardHandValue[2] && CardHandValue[0] - 2 == CardHandValue[1]) {
+            return 30;
+        } else if (CardHandValue[0] - 1 == CardHandValue[1] && CardHandValue[0] + 1 == CardHandValue[2]) {
+            return 30;
         }
+        return 0;
     },
 
-    /*检测单张*/
+    //    /*检测顺子*/   ///原始
+    //     checkshunzi: function (CardHandValue, CardHandType) {
+    //         if (CardHandValue[1] + 1 == CardHandValue[2]) {
+
+    //             if (CardHandType[2] + 1 < 16) {
+    //                 var temp = this.checkIsExsitType(CardHandValue[2] + 1);
+    //                 var temp1 = this.checkIsExsitType(CardHandValue[1] - 1);
+
+    //                 if (temp != 0) {
+    //                     CardHandType[0] = temp;
+    //                     CardHandValue[0] = CardHandValue[2] + 1;
+
+    //                     return 30;
+    //                 } else if (temp1 != 0) {
+    //                     CardHandType[0] = temp1;
+    //                     CardHandValue[0] = CardHandValue[1] - 1;
+
+    //                     return 30;
+    //                 } else {
+    //                     return 0;
+    //                 }
+
+    //             } else {
+    //                 return 0;
+    //             }
+
+    //         }
+    //         else if (CardHandValue[1] == CardHandValue[2] - 2) {
+    //             var temp = this.checkIsExsitType(CardHandValue[2] - 1);
+    //             if (temp != 0) {
+    //                 CardHandType[0] = temp
+    //                 CardHandValue[0] = CardHandValue[2] - 1;
+
+    //                 return 30;
+    //             }
+    //             else {
+    //                 return 0;
+    //             }
+    //         } else {
+    //             return 0;
+    //         }
+    //     },
+
+
+    ///检测对子
+    checkduizi: function checkduizi(CardHandValue, CardHandType) {
+        if (CardHandType[0] == CardHandType[1] && CardHandType[0] != CardHandType[2] || CardHandType[0] != CardHandType[1] && CardHandType[0] == CardHandType[1] || CardHandType[0] != CardHandType[1] && CardHandType[0] != CardHandType[2]) {
+            if (CardHandValue[0] == CardHandValue[1] && CardHandValue[0] != CardHandValue[2] || CardHandValue[0] == CardHandValue[2] && CardHandValue[0] != CardHandValue[1] || CardHandValue[1] == CardHandValue[2] && CardHandValue[0] != CardHandValue[1]) {
+                return 20;
+            }
+        }
+        return 0;
+    },
+
+    /*检测单张*/ ////修改
     checkdanzhang: function checkdanzhang(CardHandValue, CardHandType) {
         var temp = this.checkIsExsitType(CardHandValue[1]);
         var temp1 = this.checkIsExsitType(CardHandValue[2]);
@@ -1118,6 +1285,32 @@ cc.Class({
             return 0;
         }
     }
+
+    // /*检测单张*/ //原始
+    // checkdanzhang: function (CardHandValue, CardHandType) {
+    //     var temp = this.checkIsExsitType(CardHandValue[1]);
+    //     var temp1 = this.checkIsExsitType(CardHandValue[2]);
+    //     if (temp1 != 0) {
+    //         CardHandType[0] = temp1;
+    //         CardHandValue[0] = CardHandValue[2];
+    //         return 10;
+    //     } else if (temp != 0) {
+    //         CardHandType[0] = temp;
+    //         CardHandValue[0] = CardHandValue[1];
+    //         return 10;
+    //     } else {
+    //         return 0;
+    //     }
+    // },
+
+
+    /*检测对子*/
+    // checkduizi: function (CardHandValue, CardsResultType) {
+    //     if(CardHandValue[0]==CardHandValue[1]||CardHandValue[0]==CardHandValue[2]|| CardHandValue[1]==CardHandValue[2]){
+    //         return 20;
+    //     }
+    //     return 0;
+    // },
 
     //,update (dt) {},
 });
